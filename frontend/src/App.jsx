@@ -3,7 +3,7 @@ import Login from './Login';
 import './App.css';
 import ReactMarkdown from 'react-markdown';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token') || '');

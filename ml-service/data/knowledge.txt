@@ -1,0 +1,21 @@
+My name is Ask AI Chatbot, an AI-powered study assistant built as a learning project combining the MERN stack with machine learning. The goal of this project was to understand how full-stack web development connects with applied natural language processing, specifically retrieval-augmented generation.
+
+The frontend is built with React and Vite. React manages the chat interface, including the login and signup screens, message state, and real-time UI updates. Vite is used as the build tool, providing fast development with hot-reloading whenever code changes are saved.
+
+The backend is built with Express.js and Node.js. Express handles all API routing, including authentication endpoints for signup and login, and protected endpoints for creating conversations and sending messages. Authentication uses JSON Web Tokens, known as JWT, to securely verify which user is making each request without storing session data on the server.
+
+The database is MongoDB, accessed through Mongoose, an Object Data Modeling library. Three main models structure the data: User, which stores account information and a securely hashed password using bcrypt; Conversation, which represents a single chat session linked to a specific user; and Message, which stores each individual message, tagged as either from the user or from the bot, linked to its parent conversation.
+
+The machine learning service is a separate Python microservice built with FastAPI, running independently from the Express backend and communicating with it over HTTP. This separation allows Python to handle machine learning tasks that Node.js isn't well suited for, while Express continues to manage authentication and data storage.
+
+The ML service uses the sentence-transformers library to generate embeddings, which are numerical vector representations of text that capture meaning rather than exact words. The specific model used is all-MiniLM-L6-v2, a small and fast pretrained model well suited for semantic similarity tasks.
+
+When the ML service starts, it loads this knowledge file, splits it into paragraph-based chunks, and converts each chunk into an embedding. These embeddings are kept in memory for fast retrieval during chat.
+
+When a user sends a question, the question itself is converted into an embedding using the same model. Cosine similarity is then used to compare the question's embedding against every stored chunk's embedding, identifying which parts of the knowledge base are most semantically relevant to the question, even if the wording is completely different from the original text.
+
+The most relevant chunks are passed, along with the user's original question, to Google's Gemini API, specifically the gemini-2.0-flash model. The prompt instructs Gemini to use the provided context when relevant, but to fall back on its own general knowledge when the context doesn't apply, allowing the assistant to answer both project-specific questions and general study questions like a tutor.
+
+This hybrid approach means the chatbot is grounded and accurate when asked about itself or its own architecture, while remaining genuinely useful as a general-purpose study assistant for other topics.
+
+This project was built step by step as a hands-on learning exercise, starting with a basic Express server, then adding MongoDB models, authentication with JWT, a Python FastAPI service, sentence embeddings, semantic search, and finally a real LLM integration using Google's free-tier Gemini API. It demonstrates a complete, working example of a retrieval-augmented generation system built entirely with free and open tools.

@@ -13,7 +13,7 @@ router.post('/', protect, async (req, res) => {
         const userMessage = await Message.create({ conversation, sender: 'user', text });
 
         // 2. Call the Python ML service
-        const mlResponse = await axios.post('http://localhost:8000/predict', { text });
+        const mlResponse = await axios.post(process.env.ML_SERVICE_URL ||'http://localhost:8000/predict', { text });
         const botReply = mlResponse.data.reply;
 
         // 3. Save the bot's reply

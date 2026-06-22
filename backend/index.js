@@ -12,7 +12,10 @@ connectionDB();
 
 const app=express();
 app.use(express.json());//json data
-app.use(cors());
+app.use(cors({
+  origin: [process.env.PORT, 'http://localhost:5173'],
+  credentials: true
+}));
 app.use('/api/messages',messageRoutes);
 app.use('/api/conversations',conversationRoutes);
 app.use('/api/auth',authRoutes);

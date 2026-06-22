@@ -9,19 +9,28 @@ router.post('/', protect, async (req, res) => {
     try {
         const { conversation, text } = req.body;
 
-        // 1. Save the user's message
         const userMessage = await Message.create({ conversation, sender: 'user', text });
 
-        // 2. Call the Python ML service
-        const mlResponse = await axios.post(process.env.ML_SERVICE_URL ||'http://localhost:8000/predict', { text });
+        // Add this to debug
+        console.log('Calling ML service:', process.env.ML_SERVICE_URL);
+        console.log('Sending text:', text);
+
+        const mlResponse = await axios.post(process.env.ML_SERVICE_URL || 'http://localhost:8000/predict', { text });
+        
+        console.log('ML Response:', mlResponse.data);
+        
         const botReply = mlResponse.data.reply;
 
-        // 3. Save the bot's reply
         const botMessage = await Message.create({ conversation, sender: 'bot', text: botReply });
 
         res.status(201).json({ userMessage, botMessage });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        // More detailed error
+        console.error('Full error:', err.response?.data || err.message);
+        res.status(500).json({ 
+            error: err.message,
+            details: err.response?.data 
+        });
     }
 });
 

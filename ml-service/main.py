@@ -4,14 +4,14 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from sentence_transformers import SentenceTransformer
 from dotenv import load_dotenv
-import google.generativeai as genai
+from groq import Groq
 
 load_dotenv()
 
 app = FastAPI()
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-gemini_model = genai.GenerativeModel("gemini-2.5-flash")
-
+# genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+# gemini_model = genai.GenerativeModel("gemini-2.5-flash")
+groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 # load embedding model once at startup
 model = SentenceTransformer('all-MiniLM-L6-v2')
 
@@ -44,5 +44,8 @@ Context: {context}
 
 Question: {request.text}"""
 
-    response = gemini_model.generate_content(prompt)
-    return {"reply": response.text}
+    response = groq_client.chat.completions.create(
+    model="llama-3.1-8b-instant",
+    messages=[{"role": "user", "content": prompt}]
+    )
+    return {"reply": response.choices[0].message.content}
